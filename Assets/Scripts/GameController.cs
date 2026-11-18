@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 // Rock - Paper - Scissors : starter script
 // Follow the slides and complete every TODO.
@@ -21,12 +22,16 @@ public class GameController : MonoBehaviour
 
     private void InitGame()
     {
-        // TODO (slides 37-40): find the UI objects by name and get their components.
-        // Example:
-        // imgYou = GameObject.Find("ImgYou").GetComponent<Image>();
-        // Also find: ImgCom, TxtYou, TxtCom, TxtResult_
+        imgYou = GameObject.Find("ImgYou").GetComponent<Image>();
+        imgCom = GameObject.Find("ImgCom").GetComponent<Image>();
 
-        // TODO: set the text of txtResult to "Select the button below"
+        txtYou = GameObject.Find("TxtYou").GetComponent<Text>();
+        txtCom = GameObject.Find("TxtCom").GetComponent<Text>();
+        txtResult = GameObject.Find("TxtResult_").GetComponent<Text>();
+
+        txtYou.text = "0";
+        txtCom.text = "0";
+        txtResult.text = "Select the button below";
     }
 
     void Start()
@@ -51,29 +56,48 @@ public class GameController : MonoBehaviour
     {
         Debug.Log(buttonObject.name + " clicked ");
 
-        // TODO (slide 34): get the number from the first character of the button name
-        // int you = int.Parse(buttonObject.name.Substring(0, 1));
-        // CheckResult(you);
+        int you = int.Parse(buttonObject.name.Substring(0, 1));
+        CheckResult(you);
     }
 
     void CheckResult(int yourResult)
     {
-        // TODO (slide 33): game logic
-        // 1. com = random number 1..3  ->  UnityEngine.Random.Range(1, 4)
-        // 2. k = you - com
-        // 3. k == 0              -> "Draw."
-        //    k == 1 or k == -2   -> "You win."       (cntYou++)
-        //    otherwise           -> "Computer win."  (cntCom++)
-        // 4. call SetResult(yourResult, comResult)
+        int comResult = UnityEngine.Random.Range(1, 4);
+        int k = yourResult - comResult;
+
+        if (k == 0)
+        {
+            txtResult.text = "Draw.";
+        }
+        else if (k == 1 || k == -2)
+        {
+            txtResult.text = "You win.";
+            cntYou++;
+        }
+        else
+        {
+            txtResult.text = "Computer win.";
+            cntCom++;
+        }
+
+        SetResult(yourResult, comResult);
         Debug.Log("Your result is: " + yourResult);
     }
 
     void SetResult(int you, int com)
     {
-        // TODO (slide 41):
-        // 1. change imgYou.sprite and imgCom.sprite
-        //    Resources.Load("img_" + you, typeof(Sprite)) as Sprite
-        // 2. flip the computer image on the x axis: localScale = (-1, 1, 1)
-        // 3. update txtYou.text and txtCom.text with the scores
+        imgYou.sprite = Resources.Load("img_" + you, typeof(Sprite)) as Sprite;
+        imgCom.sprite = Resources.Load("img_" + com, typeof(Sprite)) as Sprite;
+
+        // flip the computer image on the x axis so it faces the player
+        imgCom.transform.localScale = new Vector3(-1, 1, 1);
+
+        txtYou.text = cntYou.ToString();
+        txtCom.text = cntCom.ToString();
+    }
+
+    public void GoToMenu()
+    {
+        SceneManager.LoadScene("MenuScene");
     }
 }
